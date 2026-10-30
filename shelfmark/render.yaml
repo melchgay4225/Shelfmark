@@ -1,0 +1,15 @@
+# Render Blueprint: deploys the backend (which also serves the frontend) as one web service.
+services:
+  - type: web
+    name: shelfmark
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install --omit=dev
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: CORS_ORIGIN
+        value: "*"   # tighten to your GitHub Pages origin, e.g. https://USERNAME.github.io
