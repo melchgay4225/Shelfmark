@@ -1,0 +1,5 @@
+node_modules/
+backend/data/books.json
+backend/data/*.tmp
+.env
+.DS_Store

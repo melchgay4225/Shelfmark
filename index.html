@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shelfmark – Book Management System</title>
+  <meta name="description" content="Shelfmark helps you catalogue, search and track the books you own, are reading, or want to read.">
+  <meta name="theme-color" content="#16222E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2316222E'/%3E%3Crect x='6' y='7' width='5' height='18' fill='%232F5DA8'/%3E%3Crect x='13' y='5' width='6' height='20' fill='%231F6F78'/%3E%3Crect x='21' y='9' width='5' height='16' fill='%239B3D2E'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/styles.css">
+  <script defer src="js/config.js"></script>
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to books</a>
+
+  <header class="top">
+    <div class="brand">
+      <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="6" width="6" height="20" fill="#7FA6E6"/><rect x="11" y="4" width="7" height="22" fill="#5DB5BD"/><rect x="20" y="8" width="6" height="18" fill="#D9806F"/><rect x="2" y="26" width="28" height="2" fill="#E9EDF0"/></svg>
+      <h1>Shelfmark</h1>
+    </div>
+    <p id="mode" class="mode" role="status">Connecting…</p>
+  </header>
+
+  <section class="summary" aria-label="Library summary">
+    <p id="summary">Loading your library…</p>
+    <dl id="figures" class="figures"></dl>
+  </section>
+
+  <section class="tools" aria-label="Search and filters">
+    <div class="field grow">
+      <label for="q">Search</label>
+      <input id="q" type="search" placeholder="Title, author or ISBN" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="genre">Genre</label>
+      <select id="genre"><option value="">All genres</option></select>
+    </div>
+    <div class="field">
+      <label for="sort">Sort by</label>
+      <select id="sort">
+        <option value="recent">Recently added</option>
+        <option value="title">Title</option>
+        <option value="author">Author</option>
+        <option value="rating">Rating</option>
+        <option value="year">Year published</option>
+      </select>
+    </div>
+    <div class="seg" role="group" aria-label="View">
+      <button type="button" data-view="shelf" aria-pressed="true">Shelf</button>
+      <button type="button" data-view="list" aria-pressed="false">List</button>
+    </div>
+    <button id="add" class="btn primary" type="button">Add book</button>
+  </section>
+
+  <nav class="tabs" aria-label="Reading status">
+    <button type="button" data-status="" aria-pressed="true">All</button>
+    <button type="button" data-status="reading" aria-pressed="false">Reading</button>
+    <button type="button" data-status="want" aria-pressed="false">Want to read</button>
+    <button type="button" data-status="finished" aria-pressed="false">Finished</button>
+  </nav>
+
+  <main id="main" tabindex="-1">
+    <div id="shelf" class="shelf"></div>
+    <div id="list" class="listwrap" hidden>
+      <table>
+        <thead><tr><th>Title</th><th>Author</th><th>Genre</th><th>Status</th><th>Rating</th><th><span class="sr">Actions</span></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <div id="empty" class="empty" hidden>
+      <p><strong>No books match.</strong></p>
+      <p>Clear the search or filters, or add a new book.</p>
+    </div>
+    <ul id="legend" class="legend" aria-label="Spine colour by genre"></ul>
+  </main>
+
+  <dialog id="dlg" aria-labelledby="dlgTitle">
+    <form id="form" novalidate>
+      <h2 id="dlgTitle">Add book</h2>
+      <div class="grid">
+        <div class="field span2"><label for="f-title">Title</label><input id="f-title" name="title" required maxlength="160"><small class="err" data-for="title"></small></div>
+        <div class="field span2"><label for="f-author">Author</label><input id="f-author" name="author" required maxlength="120"><small class="err" data-for="author"></small></div>
+        <div class="field"><label for="f-genre">Genre</label><select id="f-genre" name="genre"></select></div>
+        <div class="field"><label for="f-status">Status</label>
+          <select id="f-status" name="status"><option value="want">Want to read</option><option value="reading">Reading</option><option value="finished">Finished</option></select></div>
+        <div class="field"><label for="f-year">Year published</label><input id="f-year" name="year" type="number" inputmode="numeric" min="1"><small class="err" data-for="year"></small></div>
+        <div class="field"><label for="f-pages">Pages</label><input id="f-pages" name="pages" type="number" inputmode="numeric" min="1" max="10000"><small class="err" data-for="pages"></small></div>
+        <div class="field"><label for="f-rating">Rating</label>
+          <select id="f-rating" name="rating"><option value="0">Not rated</option><option value="1">1 star</option><option value="2">2 stars</option><option value="3">3 stars</option><option value="4">4 stars</option><option value="5">5 stars</option></select></div>
+        <div class="field"><label for="f-isbn">ISBN</label><input id="f-isbn" name="isbn" maxlength="20"></div>
+        <div class="field span2"><label for="f-notes">Notes</label><textarea id="f-notes" name="notes" rows="3" maxlength="1000"></textarea></div>
+      </div>
+      <p id="formError" class="err" role="alert"></p>
+      <div class="actions">
+        <button type="button" id="del" class="btn danger" hidden>Delete book</button>
+        <span class="spacer"></span>
+        <button type="button" id="cancel" class="btn">Cancel</button>
+        <button type="submit" class="btn primary" id="save">Save book</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <noscript><p class="empty">Shelfmark needs JavaScript to run.</p></noscript>
+</body>
+</html>
